@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .role-display {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Werewolf Game</h1>
+        <div id="setup">
+            <label for="numPlayers">Number of Players (5-30):</label>
+            <input type="number" id="numPlayers" min="5" max="30">
+
+            <label for="numWerewolves">Number of Werewolves:</label>
+            <input type="number" id="numWerewolves" min="1">
+
+            <button onclick="startGame()">Start Game</button>
+        </div>
+
+        <div id="game" style="display: none;">
+            <h2>Player Roles</h2>
+            <div class="role-display" id="roleDisplay">
+                <p id="roleText"></p>
+                <button onclick="nextPlayer()" id="nextButton">Next Player</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let roles = [];
+        let currentPlayer = 0;
+
+        function startGame() {
+            const numPlayers = parseInt(document.getElementById('numPlayers').value);
+            const numWerewolves = parseInt(document.getElementById('numWerewolves').value);
+
+            if (isNaN(numPlayers) || isNaN(numWerewolves) || numPlayers < 5 || numPlayers > 30 || numWerewolves < 1 || numWerewolves >= numPlayers) {
+                alert('Please enter valid numbers!');
+                return;
+            }
+
+            roles = Array(numPlayers).fill('Villager');
+            roles[0] = 'Doctor';
+            roles[1] = 'Detective';
+
+            for (let i = 0; i < numWerewolves; i++) {
+                roles[i + 2] = 'Werewolf';
+            }
+
+            // Shuffle roles
+            for (let i = roles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [roles[i], roles[j]] = [roles[j], roles[i]];
+            }
+
+            currentPlayer = 0;
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            showRole();
+        }
+
+        function showRole() {
+            if (currentPlayer < roles.length) {
+                document.getElementById('roleText').textContent = `Player ${currentPlayer + 1}: You are a ${roles[currentPlayer]}.`;
+            } else {
+                document.getElementById('roleText').textContent = 'All players have seen their roles. Let the game begin!';
+                document.getElementById('nextButton').style.display = 'none';
+            }
+        }
+
+        function nextPlayer() {
+            currentPlayer++;
+            showRole();
+        }
+    </script>
+</body>
+</html>
